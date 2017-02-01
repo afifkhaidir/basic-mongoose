@@ -12,7 +12,7 @@ var mongoose = require('mongoose');
 var Bear = require('./app/models/bear');
 
 // connect to database
-mongoose.connect('mongodb://localhost:27017/mongoapi');
+mongoose.connect('mongodb://afifkhaidir:qvivth8999233@ds139619.mlab.com:39619/expressapi');
 
 // configure app to use body parser
 // this config will allow us to get the data from POST
@@ -38,7 +38,9 @@ router.get('/', function(req, res) {
 	res.json({ message: 'Welcome to the family '});
 });
 
+// localhost:8080/api/bears
 router.route('/bears')
+	// Create
 	.post(function(req, res) {
 		var bear = new Bear();		// Create new instance of Bear Schema
 		bear.name = req.body.name;	// set bear name to name from request body
@@ -50,8 +52,58 @@ router.route('/bears')
 
 			res.json({ message: 'Bear created!' })
 		});
+	})
+
+	// Retrieve
+	.get(function(req, res) {
+		Bear.find(function(err, bears) {
+			if(err)
+				res.send(err);
+
+			res.json(bears);
+		});
 	});
 
+// localhost:8080/api/bears/:id
+router.route('/bears/:bear_id')
+	// Retrieve single bear
+	.get(function(req, res) {
+		Bear.findById(req.params.bear_id, function(err, bear) {
+			if(err)
+				res.send(err);
+
+			res.json(bear);
+		});
+	})
+
+	// Update
+	.put(function(req, res) {
+		Bear.findById(req.params.bear_id, function(err, bear) {
+			if(err)
+				res.send(err);
+
+			bear.name = req.body.name;
+
+			bear.save(function(err) {
+				if(err)
+					res.send(err);
+
+				res.json({ message: 'Bear Updated'});
+			});
+		});
+	})
+
+	// Delete
+	.delete(function(req, res) {
+		Bear.remove({
+			_id: req.params.bear_id
+		}, function(err, bear){
+			if(err)
+				res.send(err);
+
+			res.json({ message: 'Bear Deleted' });
+		});
+	});
 
 /*==================
   Register our routes
