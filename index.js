@@ -12,7 +12,7 @@ var mongoose = require('mongoose');
 var Bear = require('./app/models/bear');
 
 // connect to database
-mongoose.connect('mongodb://afifkhaidir:qvivth8999233@ds139619.mlab.com:39619/expressapi');
+mongoose.connect('mongodb://mongoose:mongoose@ds139619.mlab.com:39619/expressapi');
 
 // configure app to use body parser
 // this config will allow us to get the data from POST
