@@ -5,6 +5,7 @@
 =================*/
 
 // call packages
+var assert = require('assert');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -12,7 +13,7 @@ var mongoose = require('mongoose');
 var Bear = require('./app/models/bear');
 
 // connect to database
-mongoose.connect('mongodb://mongoose:mongoose@ds139619.mlab.com:39619/expressapi');
+mongoose.connect('mongodb://localhost:27017/todolist');
 
 // configure app to use body parser
 // this config will allow us to get the data from POST
@@ -46,11 +47,16 @@ router.route('/bears')
 		bear.name = req.body.name;	// set bear name to name from request body
 	
 		// save the bear and check for errors
-		bear.save(function(err) {
-			if(err)
-				res.send(err);
+		var promise = bear.save();
 
-			res.json({ message: 'Bear created!' })
+		// define promises
+		assert.ok(promise instanceof require('mpromise'));
+
+		// callback
+		promise.then(function(data) {
+			// check error
+			assert.equal(data.name, req.body.name);
+			res.json({ message: 'Bear Created!' });
 		});
 	})
 
