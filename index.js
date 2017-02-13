@@ -13,7 +13,7 @@ var mongoose = require('mongoose');
 var Bear = require('./app/models/bear');
 
 // connect to database
-mongoose.connect('mongodb://localhost:27017/todolist');
+mongoose.connect('mongodb://todoliz:todoliz789@ds139899.mlab.com:39899/todoliz');
 
 // configure app to use body parser
 // this config will allow us to get the data from POST
@@ -120,5 +120,6 @@ app.use('/api', router);
 /*==================
   Start the server
 ====================*/
-app.listen(port);
-console.log('Server run on port ' + port);
+app.listen(port, function() {	
+	console.log('Server run on port ' + port);
+});
