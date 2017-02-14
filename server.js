@@ -44,43 +44,48 @@ router.use(function (req, res, next) {
 
 /* Route for /todolist */
 router.route('/todoliz')
-	.post(function (req, res) {
-		var todo = new Todo()
-		todo.note = req.body.note
-		todo.date = req.body.date
-		todo.done = false
+	.post((req, res) => {
+		var newTodo = new Todo()
+		newTodo.note = req.body.note
+		newTodo.date = req.body.date
+		newTodo.done = false
 
-		// save the todo
-		todo.save()
-			.then(function(data) {
-				res.json({ message: 'Todo Added!' })
-			})
-			.catch(function(err) {
-				res.json({ error: err })
-			})
-
-		// query.then(function(data) {
-		// 	res.json({ message: 'Todo added!' })
-		// })
+		// create todo
+		newTodo.save()
+			.then(todo => res.json({ message: 'Todo Added!', todo: todo }))
+			.catch(err => res.json({ error: err }))
 	})
-	.get(function (req, res) {
-		Todo.find (function (err, todos) {
-			if(err)
-				res.send(err)
-
-			res.json(todos)
-		})
+	.get((req, res) => {
+		// retrieve all todos
+		Todo.find().exec()
+			.then(todos => res.json(todos))
+			.catch(err => res.json({ error: err }))
 	})
 
 router.route('/todoliz/:todo_id')
-	.get(function(req, res) {
-		// Get single todo
+	.get((req, res) => {
+		// retrieve single todo
+		Todo.findById(req.params.todo_id).exec()
+			.then(todo => res.json(todo))
+			.catch(err => res.json({ error: err }))
 	})
-	.put(function(req, res) {
-		// update
+	.put((req, res) => {
+		// update todo
+		Todo.findById(req.params.todo_id).exec()
+			.then(todo => {
+				todo.note = req.body.note
+				todo.date = req.body.date
+
+				return todo.save()
+			})
+			.then(todo => res.json({ success: true, message: 'Todo Updated!', todo: todo}))
+			.catch(err => res.json({ success: false, error: err }))
 	})
-	.delete(function(req, res) {
-		// delete
+	.delete((req, res) => {
+		// delete todo
+		Todo.remove({ _id: req.params.todo_id }).exec()
+			.then(status => res.json({ message: 'Todo removed!' }))
+			.catch(err => res.json({ error: err }))
 	})
 
 /*===============
