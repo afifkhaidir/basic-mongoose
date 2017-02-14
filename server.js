@@ -4,7 +4,6 @@
 
 /* initialization */
 var express = require('express')
-var assert = require('assert')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
 
@@ -15,13 +14,13 @@ mongoose.Promise = global.Promise
 var Todo = require('./app/models/todo')
  
 /* create express instance and define port */
-var app = express()
-var port = process.env.PORT || 8080
+const app = express()
+const port = process.env.PORT || 8080
 
 /* connection string */
-mongoose.connect('mongodb://todoliz:todoliz789@ds139899.mlab.com:39899/todoliz', function(err, db) {
+mongoose.connect('mongodb://todoliz:todoliz789@ds139899.mlab.com:39899/todoliz', (err, db) => {
 	if(err)
-		console.log('DB not connected')
+		console.log(err)
 })
 
 /* configure app using body-parser */
@@ -88,6 +87,7 @@ router.route('/todoliz/:todo_id')
 			.catch(err => res.json({ error: err }))
 	})
 
+
 /*===============
   Register routes
 =================*/
@@ -96,6 +96,7 @@ app.get('/', function(req, res) {
 })
 
 app.use('/api', router)
+
 
 /*================
   Start the server

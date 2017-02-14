@@ -4,10 +4,10 @@
 
 /* init */
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 /* define schema */
-var todoSchema = new Schema ({
+const todoSchema = new Schema ({
 	note: String,
 	done: Boolean,
 	date: Date,
