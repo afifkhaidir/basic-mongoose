@@ -7,14 +7,16 @@ var express = require('express')
 var assert = require('assert')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
+
+/* use es6 promise */
+mongoose.Promise = global.Promise
+
+/* import model */
 var Todo = require('./app/models/todo')
  
 /* create express instance and define port */
 var app = express()
 var port = process.env.PORT || 8080
-
-/* use es6 promise */
-mongoose.Promise = Promise
 
 /* connection string */
 mongoose.connect('mongodb://todoliz:todoliz789@ds139899.mlab.com:39899/todoliz', function(err, db) {
