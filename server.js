@@ -47,31 +47,7 @@ app.use(morgan('dev')) // log every requests
 /* create router instance */
 const router = express.Router()
 
-/* middleware */
-router.use(function (req, res, next) {
-	console.log('Request from clients')
-	next()
-})
-
-/* Route for /todolist */
-router.route('/setup')
-	.get((req, res) => {
-		var user = new User()
-		user.username = 'Nick Cerminara'
-		user.password = 'password'
-
-		user.save()
-			.then(nick => res.json({ success: true, message: 'User saved' }))
-			.catch(err => res.json({ error: err }))
-	})
-
-router.route('/users')
-	.get((req, res) => {
-		User.find().exec()
-			.then(user => res.json(user))
-			.catch(err => res.json({ error: err }))
-	})
-
+/* authentication, placed right before middleware */
 router.route('/authenticate')
 	.post((req, res) => {
 		const username = req.body.username
@@ -95,6 +71,47 @@ router.route('/authenticate')
 					}
 				}
 			})
+			.catch(err => res.json({ error: err }))
+	})
+
+/* middleware */
+router.use(function (req, res, next) {
+	// fetch token
+	const token = req.body.token || req.query.token || req.headers['x-access-token']
+
+	if(token) {
+		// verify token
+		jwt.verify(token, app.get('todolizSecret'), (err, decoded) => {
+			if(err) {
+				res.json({ success: false, message: 'Failed to authenticate token' })
+			} else {
+				// verified
+				req.decoded = decoded
+				next()
+			}
+		})
+	} else {
+		// respond 403
+		res.status(403).send({ success: false, message: 'No token provided' })
+	}
+})
+
+/* Route for /todolist */
+router.route('/setup')
+	.get((req, res) => {
+		var user = new User()
+		user.username = 'Nick Cerminara'
+		user.password = 'password'
+
+		user.save()
+			.then(nick => res.json({ success: true, message: 'User saved' }))
+			.catch(err => res.json({ error: err }))
+	})
+
+router.route('/users')
+	.get((req, res) => {
+		User.find().exec()
+			.then(user => res.json({ welcome: req.decoded, user: user }))
 			.catch(err => res.json({ error: err }))
 	})
 
