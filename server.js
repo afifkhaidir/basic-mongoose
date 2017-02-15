@@ -74,13 +74,12 @@ router.route('/users')
 
 router.route('/authenticate')
 	.post((req, res) => {
-		const username = req.params.username
-		const password = req.params.password
+		const username = req.body.username
+		const password = req.body.password
 
 		// find the user
 		User.findOne({ 'username': username }).exec()
 			.then(user => {
-				res.json(user)
 				if(!user) {
 					res.json({ success: false, message: 'Auth failed. User not found!' })
 				} else {
@@ -89,7 +88,7 @@ router.route('/authenticate')
 						res.json({ success: false, message: 'Auth failed. Wrong password!' })
 					} else {
 						var token = jwt.sign(user, app.get('todolizSecret'), {
-							expiresInMinutes: 120
+							expiresIn: 60*60*2
 						})
 
 						res.json({ success: true, token: token})
